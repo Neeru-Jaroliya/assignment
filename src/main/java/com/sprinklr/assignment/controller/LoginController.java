@@ -7,10 +7,13 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,31 +71,31 @@ public class LoginController {
 		return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 	}
 
-	@RequestMapping("/session-alive")
+	@RequestMapping( method = RequestMethod.GET, value = "/session-alive")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<String> sessionAlive(@RequestParam("token") String token) { // change to GET
-		String tokenValue = token;
+	public ResponseEntity<String> sessionAlive(@RequestHeader(value="AccessToken") String accessToken) { 
+		String tokenValue = accessToken;
 		log.info("*********  login" + tokenValue + " *********");
 		int value = sessionService.isSessionAlive(tokenValue);
 		if (value == 1) {
 			return new ResponseEntity<String>("Session Alive", HttpStatus.OK);
 		}else if(value == 0){
-			dataLoggerService.logData(tokenValue, UserAction.LOGGED_OUT.name()); // check this
+			dataLoggerService.logData(tokenValue, UserAction.SESSION_EXPIRED.name()); 
 		}
 		return new ResponseEntity<String>("Session expired",HttpStatus.BAD_REQUEST);
 	}
 
-	@RequestMapping("/logout")
+	@RequestMapping(method = RequestMethod.GET, value = "/logout")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<String> logout(@RequestBody TokenRequest request) {
-		String tokenValue = request.getToken();
+	public ResponseEntity<String> logout(@RequestHeader(value="AccessToken") String accessToken) {
+		String tokenValue = accessToken;
 		log.info("********* logout " + tokenValue + " *********");
 		String userId = sessionService.destroySession(tokenValue);
 		dataLoggerService.logData(Long.parseLong(userId), UserAction.LOGGED_OUT.name());
 		return new ResponseEntity<String>("User logged out successfully",HttpStatus.OK);
 	}
 	
-	@RequestMapping("/login-trail")
+	@RequestMapping(method = RequestMethod.GET, value = "/login-trail")
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<List<LoginData>> getLoginTrail(@RequestParam("email") String email) {
 		List<LoginData> loginDataList = dataLoggerService.getListOfTrail(email); 

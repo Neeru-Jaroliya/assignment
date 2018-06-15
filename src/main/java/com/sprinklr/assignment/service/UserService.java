@@ -12,7 +12,7 @@ import com.sprinklr.assignment.util.AssignmentUtil;
 @Service
 public class UserService {
 	
-	private User user;
+	// private User user;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -48,7 +48,7 @@ public class UserService {
 	}
 	
 	private User getDBUserWithEmailCheck(String email){
-		if ( !AssignmentUtil.validEmail(user.getEmail())){
+		if ( !AssignmentUtil.validEmail(email)){
 			log.info("Email Validation Failed");
 			return null;
 		}
@@ -61,7 +61,7 @@ public class UserService {
 	}
 	
 	private boolean checkValidPassword(String userPwd, String dbUserPwd){
-		if ( !AssignmentUtil.validPassword(user.getPassword())){
+		if ( !AssignmentUtil.validPassword(userPwd)){
 			log.info("Password Validation Failed");
 			return false;
 		}

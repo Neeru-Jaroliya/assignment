@@ -3,6 +3,7 @@ package com.sprinklr.assignment.service;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +33,14 @@ public class SessionService {
 		SecureRandom random = new SecureRandom();
 		byte bytes[] = new byte[20];
 		random.nextBytes(bytes);
-		String tokenValue = bytes.toString() + "-" + user.getUserId();
-		log.info("TokenValue: " + tokenValue);
+		String tokenValue = bytes.toString() + new Random().nextInt()+ "-" + user.getUserId();
+		log.info("TokenValue: " + tokenValue + tokenRepository.findOne(tokenValue));
+		while(tokenRepository.findOne(tokenValue) != null){
+			random = new SecureRandom();
+			random.nextBytes(bytes);
+			tokenValue = bytes.toString() + new Random().nextInt()+ "-" + user.getUserId();
+			log.info("TokenValue: " + tokenValue);
+		}
 		token = new Token();
 		token.setData(tokenValue);
 		token.setCreatedAt(new Date());
