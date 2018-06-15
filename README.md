@@ -31,3 +31,6 @@ Response: On successful execution "User logged out successfully"
 5. Login Trail
 GET: http://localhost:8080/login/login-trail?email=email
 Response: Login Trail with Limit 20
+
+6. Scheduler
+Running in every 1 min to delete expired tokens
